@@ -10,11 +10,11 @@ import com.techm.assessment.model.Loginuser;
 
 @Repository
 public interface LoginRepository extends JpaRepository<Loginuser, Long> {
-	
-	@Query("SELECT r FROM Loginuser r where r.username = :username and r.password = :password" ) 
-	Optional<Loginuser> findUser(String username, String password);
-	
-	@Query("SELECT r FROM Loginuser r where r.username = :username" ) 
-	Optional<Loginuser> findUserName(String username);
+
+	@Query("SELECT r FROM Loginuser r where r.email = :email and r.password = :password")
+	Optional<Loginuser> findUser(String email, String password);
+
+	@Query("SELECT r FROM Loginuser r where r.email= :email")
+	Optional<Loginuser> findUserName(String email);
 
 }

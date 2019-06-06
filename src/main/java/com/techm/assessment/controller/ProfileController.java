@@ -25,9 +25,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.techm.assessment.ResourceNotFoundException;
-import com.techm.assessment.dao.ProfileRepository;
 import com.techm.assessment.model.UserProfile;
+import com.techm.assessment.model.UsersMonthWiseReport;
+import com.techm.assessment.service.ProfileService;
 import com.techm.assessment.service.StorageService;
 
 @CrossOrigin(origins = "http://localhost:4200", maxAge = 3600)
@@ -37,54 +37,34 @@ import com.techm.assessment.service.StorageService;
 public class ProfileController {
 
 	@Autowired
-	ProfileRepository profileRepository;
+	StorageService storageService;
 
 	@Autowired
-	StorageService storageService;
+	ProfileService profileService;
 
 	// Get All Notes
 	@GetMapping("/users")
 	public List<UserProfile> getAllUsers() {
-
-		return profileRepository.findAll();
+		return profileService.getAllUsers();
 	}
 
 	// Create a new Note
 	@PostMapping("/user")
 	public UserProfile createUser(@Valid @RequestBody UserProfile user) {
-		return profileRepository.save(user);
+		return profileService.createUser(user);
 	}
 
 	// Get a Single Note
 	@GetMapping("/user/{id}")
 	public UserProfile getUserById(@PathVariable(value = "id") Long id) {
-		return profileRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("user profile", "id", id));
+		return profileService.getUserById(id);
 	}
-
-	// Update a Note
-//	@PutMapping("user")
-//	public UserProfile updateUser(@Valid @RequestBody UserProfile userDetails) {
-//		UserProfile user = profileRepository.findById(userDetails.getId())
-//				.orElseThrow(() -> new ResourceNotFoundException("user profile", "id", userDetails.getId()));
-//		user.setFirstName(userDetails.getFirstName());
-//		user.setLastName(userDetails.getLastName());
-//		user.setPhone(userDetails.getPhone());
-//		user.setEmail(userDetails.getEmail());
-//		user.setAddress(userDetails.getAddress());
-//
-//		UserProfile updatedUser = profileRepository.save(user);
-//		return updatedUser;
-//	}
 
 	// Delete a Note
 	@DeleteMapping("/user/{id}")
 	public ResponseEntity<?> deleteUser(@PathVariable(value = "id") Long userId) {
-		UserProfile user = profileRepository.findById(userId)
-				.orElseThrow(() -> new ResourceNotFoundException("user profile", "id", userId));
-
-		profileRepository.delete(user);
-
+		UserProfile user = profileService.getUserById(userId);
+		profileService.deleteUser(user);
 		return ResponseEntity.ok().build();
 	}
 
@@ -97,18 +77,15 @@ public class ProfileController {
 			storageService.store(profileImage);
 			Resource resource = storageService.loadFile(profileImage.getOriginalFilename());
 
-			// profileRepository.save(user);
-
-			UserProfile user = profileRepository.findById(userProfile.getId())
-					.orElseThrow(() -> new ResourceNotFoundException("user profile", "id", userProfile.getId()));
+			UserProfile user = profileService.getUserById(userProfile.getId());
 			user.setFirstName(userProfile.getFirstName());
 			user.setLastName(userProfile.getLastName());
-			user.setPhone(userProfile.getPhone());
-			user.setEmail(userProfile.getEmail());
+			user.setDob(userProfile.getDob());
+			user.setGender(userProfile.getGender());
 			user.setAddress(userProfile.getAddress());
 			user.setFilepath(resource.getURL().getFile().toString());
 
-			profileRepository.save(user);
+			profileService.createUser(user);
 			message = "You successfully Updated user and uploaded " + profileImage.getOriginalFilename() + "!";
 
 			return ResponseEntity.status(HttpStatus.OK).body(message);
@@ -116,6 +93,10 @@ public class ProfileController {
 			message = "FAIL to upload " + profileImage.getOriginalFilename() + "!";
 			return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(message);
 		}
+	}
 
+	@GetMapping("trends")
+	public List<UsersMonthWiseReport> findMonthWiseReport() {
+		return profileService.findMonthWiseReport();
 	}
 }

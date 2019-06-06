@@ -14,17 +14,16 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @SuppressWarnings("serial")
 @Entity
 @Table(name = "profile")
 @EntityListeners(AuditingEntityListener.class)
-@JsonIgnoreProperties(value = { "createdAt", "updatedAt" })
+// @JsonIgnoreProperties(value = { "createdAt", "updatedAt" })
 public class UserProfile {
-	
+
 	@Id
-	// @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 
 	@Column(name = "firstName")
@@ -33,25 +32,28 @@ public class UserProfile {
 	@Column(name = "lastName")
 	private String lastName;
 
-	@Column(name = "phone")
-	private String phone;
-
-	@Column(name = "email")
-	private String email;
-
 	@Column(name = "address")
 	private String address;
-	
+
+	@Column(name = "gender")
+	private String gender;
+
+	@Column(name = "dob")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "GMT")
+	private String dob;
+
 	@Column(name = "path")
 	private String filepath;
 
 	@Column(nullable = false, updatable = false)
 	@Temporal(TemporalType.TIMESTAMP)
+	@JsonFormat(pattern = "dd-MMM-YYYY")
 	@CreatedDate
 	private Date createdAt;
 
 	@Column(nullable = false)
 	@Temporal(TemporalType.TIMESTAMP)
+	@JsonFormat(pattern = "dd-MMM-YYYY")
 	@LastModifiedDate
 	private Date updatedAt;
 
@@ -79,22 +81,6 @@ public class UserProfile {
 		this.lastName = lastName;
 	}
 
-	public String getPhone() {
-		return phone;
-	}
-
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
 	public String getAddress() {
 		return address;
 	}
@@ -110,7 +96,36 @@ public class UserProfile {
 	public void setFilepath(String filepath) {
 		this.filepath = filepath;
 	}
-	
-	
 
+	public Date getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(Date createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	public Date getUpdatedAt() {
+		return updatedAt;
+	}
+
+	public void setUpdatedAt(Date updatedAt) {
+		this.updatedAt = updatedAt;
+	}
+
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+	public String getDob() {
+		return dob;
+	}
+
+	public void setDob(String dob) {
+		this.dob = dob;
+	}
 }

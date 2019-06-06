@@ -15,7 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class StorageService {
  
-  // Logger log = LoggerFactory.getLogger(this.getClass().getName());
   private final Path rootLocation = Paths.get("D:\\Files");
  
   public void store(MultipartFile file) {
@@ -40,9 +39,6 @@ public class StorageService {
     }
   }
  
-  public void deleteAll() {
-    FileSystemUtils.deleteRecursively(rootLocation.toFile());
-  }
  
   public void init() {
     try {
